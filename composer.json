@@ -8,11 +8,22 @@
             "Jc\\": "src/Jc"
         }
     },
+    "scripts": {
+        "tests": "phpunit --color=always --testdox tests/"
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Jc\\Tests\\": "tests"
+        }
+    },
+
     "authors": [
         {
             "name": "JuanWong",
             "email": "juanwong0211@gmail.com"
         }
     ],
-    "require": {}
+    "require-dev": {
+        "phpunit/phpunit": "^10.3"
+    }
 }
