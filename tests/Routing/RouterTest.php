@@ -2,10 +2,10 @@
 
 namespace Jc\Tests;
 
-use Jc\HttpMethod;
-use Jc\Request;
-use Jc\Router;
-use Jc\Server;
+use Jc\Http\HttpMethod;
+use Jc\Http\Request;
+use Jc\Routing\Router;
+use Jc\Server\Server;
 use PHPUnit\Framework\TestCase;
 
 class RouterTest extends TestCase {

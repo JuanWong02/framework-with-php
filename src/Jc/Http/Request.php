@@ -1,6 +1,8 @@
 <?php
 
-namespace Jc;
+namespace Jc\Http;
+
+use Jc\Server\Server;
 
 class Request {
     protected string $uri;

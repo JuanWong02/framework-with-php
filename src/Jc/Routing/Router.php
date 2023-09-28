@@ -1,8 +1,11 @@
 <?php
 
-namespace Jc;
+namespace Jc\Routing;
 
 use Closure;
+use Jc\Http\HttpMethod;
+use Jc\Http\HttpNotFoundException;
+use Jc\Http\Request;
 
 class Router {
     protected array $routes = [];

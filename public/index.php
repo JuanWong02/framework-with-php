@@ -1,13 +1,13 @@
 <?php
 
+use Jc\Http\HttpNotFoundException;
+use Jc\Http\Request;
+use Jc\Routing\Router;
+use Jc\Server\PhpNativeServer;
+
 require_once "../vendor/autoload.php";
 
-use Jc\HttpNotFoundException;
-use Jc\PhpNativeServer;
-use Jc\Request;
-use Jc\Route;
-use Jc\Router;
-use Jc\Server;
+
 
 $router = new Router();
 

@@ -1,6 +1,8 @@
 <?php
 
-namespace Jc;
+namespace Jc\Server;
+
+use Jc\Http\HttpMethod;
 
 interface Server {
     public function requestUri(): string; 

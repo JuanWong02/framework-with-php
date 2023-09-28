@@ -1,6 +1,6 @@
 <?php
 
-namespace Jc;
+namespace Jc\Http;
 
 enum HttpMethod: string {
     case GET = "GET";

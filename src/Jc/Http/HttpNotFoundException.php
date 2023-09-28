@@ -1,6 +1,6 @@
 <?php
 
-namespace Jc;
+namespace Jc\Http;
 
 class HttpNotFoundException extends \Exception {
     
