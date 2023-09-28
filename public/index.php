@@ -3,6 +3,7 @@
 require_once "../vendor/autoload.php";
 
 use Jc\HttpNotFoundException;
+use Jc\Route;
 use Jc\Router;
 
 $router = new Router();
@@ -19,16 +20,16 @@ $router->put('/test', function () {
 });
 $router->patch('/test', function () {
     return "PATCH OK";
-}); 
+});
 $router->delete('/test', function () {
     return "DELETE OK";
 });
 
 try {
-    $action = $router->resolve($_SERVER["REQUEST_URI"], $_SERVER["REQUEST_METHOD"]);
+    $route = $router->resolve($_SERVER["REQUEST_URI"], $_SERVER["REQUEST_METHOD"]);
+    $action = $route->action();
     print($action());
 } catch (HttpNotFoundException $e) {
     print("Not found");
     http_response_code(404);
 }
-
