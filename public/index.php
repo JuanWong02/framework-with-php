@@ -1,6 +1,9 @@
 <?php
 
-require "./Router.php";
+require_once "../vendor/autoload.php";
+
+use Jc\HttpNotFoundException;
+use Jc\Router;
 
 $router = new Router();
 
