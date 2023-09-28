@@ -3,6 +3,7 @@
 require_once "../vendor/autoload.php";
 
 use Jc\HttpNotFoundException;
+use Jc\PhpNativeServer;
 use Jc\Request;
 use Jc\Route;
 use Jc\Router;
@@ -28,7 +29,7 @@ $router->delete('/test', function () {
 });
 
 try {
-    $route = $router->resolve(new Request(new Server()));
+    $route = $router->resolve(new Request(new PhpNativeServer()));
     $action = $route->action();
     print($action());
 } catch (HttpNotFoundException $e) {
