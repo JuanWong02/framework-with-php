@@ -77,7 +77,7 @@ class RouterTest extends TestCase {
     }
 
     public function test_run_middlewares() {
-        $middleware1 = new Class {
+        $middleware1 = new class () {
             public function handle(Request $request, Closure $next): Response {
                 $response = $next($request);
                 $response->setHeader('x-test-one', 'one');
@@ -86,7 +86,7 @@ class RouterTest extends TestCase {
             }
         };
 
-        $middleware2 = new Class {
+        $middleware2 = new class () {
             public function handle(Request $request, Closure $next): Response {
                 $response = $next($request);
                 $response->setHeader('x-test-two', 'two');
@@ -98,7 +98,7 @@ class RouterTest extends TestCase {
         $router = new Router();
         $uri = '/test';
         $expectedResponse = Response::text("test");
-        $router->get($uri,fn ($request) => $expectedResponse) 
+        $router->get($uri, fn ($request) => $expectedResponse)
             ->setMiddlewares([$middleware1, $middleware2]);
 
         $response = $router->resolve($this->createMockRequest($uri, HttpMethod::GET));
@@ -106,5 +106,33 @@ class RouterTest extends TestCase {
         $this->assertEquals($expectedResponse, $response);
         $this->assertEquals($response->headers('x-test-one'), 'one');
         $this->assertEquals($response->headers('x-test-two'), 'two');
+    }
+
+    public function test_middleware_stack_can_be_stopped() {
+        $stopMiddleware = new class () {
+            public function handle(Request $request, Closure $next): Response {
+                return Response::text("Stopped");
+            }
+        };
+
+        $middleware2 = new class () {
+            public function handle(Request $request, Closure $next): Response {
+                $response = $next($request);
+                $response->setHeader('x-test-two', 'two');
+
+                return $response;
+            }
+        };
+
+        $router = new Router();
+        $uri = '/test';
+        $unreachableResponse = Response::text("Unreachable");
+        $router->get($uri, fn ($request) => $unreachableResponse)
+            ->setMiddlewares([$stopMiddleware, $middleware2]);
+
+        $response = $router->resolve($this->createMockRequest($uri, HttpMethod::GET));
+
+        $this->assertEquals("Stopped", $response->content());
+        $this->assertNull($response->headers('x-test-two'));
     }
 }

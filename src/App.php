@@ -9,6 +9,8 @@ use Jc\Http\Response;
 use Jc\Routing\Router;
 use Jc\Server\PhpNativeServer;
 use Jc\Server\Server;
+use Jc\View\JcEngine;
+use Jc\View\View;
 
 class App
 {
@@ -18,12 +20,15 @@ class App
 
     public Server $server;
 
+    public View $view;
+
     public static function bootstrap()
     {
         $app = Container::singleton(self::class);
         $app->router = new Router();
         $app->server = new PhpNativeServer();
         $app->request = $app->server->getRequest();
+        $app->view = new JcEngine(__DIR__ . "/../views");
 
         return $app;
     }
