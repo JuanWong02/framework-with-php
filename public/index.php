@@ -1,36 +1,40 @@
 <?php
 
-use Jc\Http\HttpNotFoundException;
+use Jc\App;
+use Jc\Http\Middleware;
 use Jc\Http\Request;
 use Jc\Http\Response;
-use Jc\Routing\Router;
-use Jc\Server\PhpNativeServer;
+use Jc\Routing\Route;
 
 require_once "../vendor/autoload.php";
 
-$router = new Router();
+$app = App::bootstrap();
 
-$router->get('/test/{param}', function (Request $request) {
+$app->router->get('/test/{param}', function (Request $request) {
     return Response::json($request->routeParameters());
 });
 
-$router->post('/test', function (Request $request) {
+$app->router->post('/test', function (Request $request) {
     return Response::json($request->data());
 });
 
-$router->get('/redirect', function (Request $request) {
+$app->router->get('/redirect', function (Request $request) {
     return Response::redirect("/test");
 });
 
-$server = new PhpNativeServer();
-try {
-    $request = $server->getRequest();
-    $route = $router->resolve($request);
-    $request->setRoute($route);
-    $action = $route->action();
-    $response = $action($request);
-    $server->sendResponse($response);
-} catch (HttpNotFoundException $e) {
-    $response = Response::text("Not found")->setStatus(404);
-    $server->sendResponse($response);
+class AuthMiddleware implements Middleware {
+    public function handle(Request $request, Closure $next): Response {
+        if ($request->headers('Authorization') != 'test') {
+            return Response::json(["message" => "Not authenticated"])->setStatus(401);
+        }
+
+        return $next();
+    }
 }
+
+Route::get('/middlewares', fn (Request $request) => Response::json(["message" => "ok"]))
+    ->setMiddlewares([AuthMiddleware::class]);
+
+$app->run();
+
+
