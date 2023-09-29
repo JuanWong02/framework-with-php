@@ -3,28 +3,30 @@
 namespace Jc\Server;
 
 use Jc\Http\HttpMethod;
+use Jc\Http\Request;
 use Jc\Http\Response;
 
+/**
+ * PHP native server that uses `$_SERVER` global.
+ */
 class PhpNativeServer implements Server {
-    public function requestUri(): string {
-        return parse_url($_SERVER["REQUEST_URI"], PHP_URL_PATH);
+    /**
+     * @inheritDoc
+     */
+    public function getRequest(): Request {
+        return (new Request())
+            ->setUri(parse_url($_SERVER["REQUEST_URI"], PHP_URL_PATH))
+            ->setMethod(HttpMethod::from($_SERVER["REQUEST_METHOD"]))
+            ->setPostData($_POST)
+            ->setQueryParameters($_GET);
     }
 
-    public function requestMethod(): HttpMethod {
-        return HttpMethod::from($_SERVER["REQUEST_METHOD"]);
-    }
-
-    public function postData(): array {
-        return $_POST;
-    }
-
-    public function queryParams(): array {
-        return $_GET;
-    }
-
-     public function sendResponse(Response $response) {
+    /**
+     * @inheritDoc
+     */
+    public function sendResponse(Response $response) {
         // PHP sends Content-Type header by default, but it has to be removed if
-        // the response has no content. Content-Type header can't be removed
+        // the response has not content. Content-Type header can't be removed
         // unless it is set to some value before.
         header("Content-Type: None");
         header_remove("Content-Type");

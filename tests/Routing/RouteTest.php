@@ -1,14 +1,12 @@
 <?php
 
-namespace Jc\Tests;
+namespace Jc\Tests\Routing;
 
 use Jc\Routing\Route;
 use PHPUnit\Framework\TestCase;
 
-class RouteTest extends TestCase
-{
-    public function routesWithNoParameters()
-    {
+class RouteTest extends TestCase {
+    public function routesWithNoParameters() {
         return [
             ['/'],
             ['/test'],
@@ -22,10 +20,7 @@ class RouteTest extends TestCase
     /**
      * @dataProvider routesWithNoParameters
      */
-
-    public function test_regex_with_no_parameters(string $uri)
-    {
-        $uri = '/test';
+    public function test_regex_with_no_parameters(string $uri) {
         $route = new Route($uri, fn () => "test");
         $this->assertTrue($route->matches($uri));
         $this->assertFalse($route->matches("$uri/extra/path"));
@@ -36,14 +31,12 @@ class RouteTest extends TestCase
     /**
      * @dataProvider routesWithNoParameters
      */
-    public function test_regex_on_uri_that_ends_with_slash(string $uri)
-    {
+    public function test_regex_on_uri_that_ends_with_slash(string $uri) {
         $route = new Route($uri, fn () => "test");
         $this->assertTrue($route->matches("$uri/"));
     }
 
-    public function routesWithParameters()
-    {
+    public function routesWithParameters() {
         return [
             [
                 '/test/{test}',
@@ -58,12 +51,12 @@ class RouteTest extends TestCase
             [
                 '/test/{test}',
                 '/test/string',
-                ['test' => 'string'],
+                ['test' => 'string']
             ],
             [
                 '/test/nested/{route}',
                 '/test/nested/5',
-                ['route' => 5],
+                ['route' => 5]
             ],
             [
                 '/test/{param}/long/{test}/with/{multiple}/params',
@@ -76,21 +69,18 @@ class RouteTest extends TestCase
     /**
      * @dataProvider routesWithParameters
      */
-
-    public function test_regex_with_parameters(string $definition, string $uri)
-    {
+    public function test_regex_with_parameters(string $definition, string $uri) {
         $route = new Route($definition, fn () => "test");
         $this->assertTrue($route->matches($uri));
         $this->assertFalse($route->matches("$uri/extra/path"));
         $this->assertFalse($route->matches("/some/path/$uri"));
         $this->assertFalse($route->matches("/random/route"));
     }
+
     /**
      * @dataProvider routesWithParameters
      */
-
-    public function test_parse_parameters(string $definition, string $uri, array $expectedParameters)
-    {
+    public function test_parse_parameters(string $definition, string $uri, array $expectedParameters) {
         $route = new Route($definition, fn () => "test");
         $this->assertTrue($route->hasParameters());
         $this->assertEquals($expectedParameters, $route->parseParameters($uri));

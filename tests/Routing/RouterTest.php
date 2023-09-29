@@ -1,20 +1,17 @@
 <?php 
 
-namespace Jc\Tests;
+namespace Jc\Tests\Routing;
 
 use Jc\Http\HttpMethod;
 use Jc\Http\Request;
 use Jc\Routing\Router;
-use Jc\Server\Server;
 use PHPUnit\Framework\TestCase;
 
 class RouterTest extends TestCase {
     private function createMockRequest(string $uri, HttpMethod $method): Request {
-        $mockServer = $this->getMockBuilder(Server::class)->getMock();
-        $mockServer->method('requestUri')->willReturn($uri);
-        $mockServer->method('requestMethod')->willReturn($method);
-
-        return new Request($mockServer);
+        return (new Request())
+            ->setUri($uri)
+            ->setMethod($method);
     }
 
     public function test_resolve_basic_route_with_callback_action() {
@@ -57,7 +54,7 @@ class RouterTest extends TestCase {
             [HttpMethod::PATCH, "/test", fn () => "patch"],
             [HttpMethod::DELETE, "/test", fn () => "delete"],
 
-            [HttpMethod::GET, "random/get", fn () => "get"],
+            [HttpMethod::GET, "/random/get", fn () => "get"],
             [HttpMethod::POST, "/random/nested/post", fn () => "post"],
             [HttpMethod::PUT, "/put/random/route", fn () => "put"],
             [HttpMethod::PATCH, "/some/patch/route", fn () => "patch"],
