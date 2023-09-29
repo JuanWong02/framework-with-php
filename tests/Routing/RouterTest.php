@@ -2,8 +2,10 @@
 
 namespace Jc\Tests\Routing;
 
+use Closure;
 use Jc\Http\HttpMethod;
 use Jc\Http\Request;
+use Jc\Http\Response;
 use Jc\Routing\Router;
 use PHPUnit\Framework\TestCase;
 
@@ -72,5 +74,37 @@ class RouterTest extends TestCase {
             $this->assertEquals($uri, $route->uri());
             $this->assertEquals($action, $route->action());
         }
+    }
+
+    public function test_run_middlewares() {
+        $middleware1 = new Class {
+            public function handle(Request $request, Closure $next): Response {
+                $response = $next($request);
+                $response->setHeader('x-test-one', 'one');
+
+                return $response;
+            }
+        };
+
+        $middleware2 = new Class {
+            public function handle(Request $request, Closure $next): Response {
+                $response = $next($request);
+                $response->setHeader('x-test-two', 'two');
+
+                return $response;
+            }
+        };
+
+        $router = new Router();
+        $uri = '/test';
+        $expectedResponse = Response::text("test");
+        $router->get($uri,fn ($request) => $expectedResponse) 
+            ->setMiddlewares([$middleware1, $middleware2]);
+
+        $response = $router->resolve($this->createMockRequest($uri, HttpMethod::GET));
+
+        $this->assertEquals($expectedResponse, $response);
+        $this->assertEquals($response->headers('x-test-one'), 'one');
+        $this->assertEquals($response->headers('x-test-two'), 'two');
     }
 }
