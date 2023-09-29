@@ -13,28 +13,36 @@ class Response {
         return $this->status;
     }
 
-    public function setStatus(int $status) {
+    public function setStatus(int $status): self {
         $this->status = $status;
+        return $this;
     }
 
     public function headers(): array {
         return $this->headers;
     }
 
-    public function setHeader(string $header, string $value) {
+    public function setHeader(string $header, string $value): self {
         $this->headers[strtolower($header)] = $value;
+        return $this;
     }
 
     public function removeHeader(string $header) {
         unset($this->headers[strtolower($header)]);
     }
 
+    public function setContentType(string $value): self {
+        $this->setHeader("Content-Type", $value);
+        return $this;
+    }
+
     public function content(): ?string {
         return $this->content;
     }
 
-    public function setContent(string $content) {
+    public function setContent(string $content): self {
         $this->content = $content;
+        return $this;
     }
 
     public function prepare() {
@@ -45,4 +53,22 @@ class Response {
             $this->setHeader("Content-Length", strlen($this->content));
         }
     }
+
+    public static function json(array $data): self {
+      return (new self())
+        ->setContentType("application/json")
+        ->setContent(json_encode($data));
+    }
+
+    public static function text(string $text): self {
+        return (new self())
+          ->setContentType("text/plain")
+          ->setContent($text);
+      }
+
+      public static function redirect(string $uri): self {
+        return (new self())
+            ->setStatus(302)
+            ->setHeader("Location", $uri);
+      }
 }
