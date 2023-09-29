@@ -11,7 +11,8 @@ use Jc\Http\Response;
 /**
  * HTTP router.
  */
-class Router {
+class Router
+{
     /**
      * HTTP routes.
      *
@@ -22,7 +23,8 @@ class Router {
     /**
      * Create a new router.
      */
-    public function __construct() {
+    public function __construct()
+    {
         foreach (HttpMethod::cases() as $method) {
             $this->routes[$method->value] = [];
         }
@@ -35,7 +37,8 @@ class Router {
      * @return Route
      * @throws HttpNotFoundException when route is not found
      */
-    public function resolveRoute(Request $request): Route {
+    public function resolveRoute(Request $request): Route
+    {
         foreach ($this->routes[$request->method()->value] as $route) {
             if ($route->matches($request->uri())) {
                 return $route;
@@ -45,16 +48,33 @@ class Router {
         throw new HttpNotFoundException();
     }
 
-    public function resolve(Request $request): Response {
+    public function resolve(Request $request): Response
+    {
         $route = $this->resolveRoute($request);
         $request->setRoute($route);
         $action = $route->action();
 
         if ($route->hasMiddlewares()) {
-            // Run middlewares
+            return $this->runMiddlewares($request, $route->middlewares(), $action);
         }
 
         return $action($request);
+    }
+
+    protected function runMiddlewares(Request $request, array $middlewares, $target): Response
+    {
+        if (count($middlewares) == 0) {
+            return $target($request);
+        }
+
+        return $middlewares[0]->handle(
+            $request,
+            fn ($request) => $this->runMiddlewares(
+                $request,
+                array_slice($middlewares, 1),
+                $target
+            )
+        );
     }
 
     /**
@@ -65,7 +85,8 @@ class Router {
      * @param Closure $action
      * @return Route
      */
-    protected function registerRoute(HttpMethod $method, string $uri, Closure $action): Route {
+    protected function registerRoute(HttpMethod $method, string $uri, Closure $action): Route
+    {
         $route = new Route($uri, $action);
         $this->routes[$method->value][] = $route;
 
@@ -79,7 +100,8 @@ class Router {
      * @param \Closure $action
      * @return Route
      */
-    public function get(string $uri, \Closure $action): Route {
+    public function get(string $uri, \Closure $action): Route
+    {
         return $this->registerRoute(HttpMethod::GET, $uri, $action);
     }
 
@@ -90,7 +112,8 @@ class Router {
      * @param Closure $action
      * @return Route
      */
-    public function post(string $uri, Closure $action): Route {
+    public function post(string $uri, Closure $action): Route
+    {
         return $this->registerRoute(HttpMethod::POST, $uri, $action);
     }
 
@@ -101,7 +124,8 @@ class Router {
      * @param Closure $action
      * @return Route
      */
-    public function put(string $uri, Closure $action): Route {
+    public function put(string $uri, Closure $action): Route
+    {
         return $this->registerRoute(HttpMethod::PUT, $uri, $action);
     }
 
@@ -112,7 +136,8 @@ class Router {
      * @param Closure $action
      * @return Route
      */
-    public function patch(string $uri, Closure $action): Route {
+    public function patch(string $uri, Closure $action): Route
+    {
         return $this->registerRoute(HttpMethod::PATCH, $uri, $action);
     }
 
@@ -123,7 +148,8 @@ class Router {
      * @param Closure $action
      * @return Route
      */
-    public function delete(string $uri, Closure $action): Route {
+    public function delete(string $uri, Closure $action): Route
+    {
         return $this->registerRoute(HttpMethod::DELETE, $uri, $action);
     }
 }

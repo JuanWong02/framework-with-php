@@ -84,7 +84,7 @@ class Route {
      * @return \Jc\Http\Middleware[]
      */
     public function middlewares(): array {
-        return $this->middlewares();
+        return $this->middlewares;
     }
 
     public function setMiddlewares(array $middlewares): self {
