@@ -5,8 +5,7 @@ use Jc\Http\Middleware;
 use Jc\Http\Request;
 use Jc\Http\Response;
 use Jc\Routing\Route;
-use Jc\Validation\Rule;
-use Jc\Validation\Rules\Required;
+
 
 require_once "../vendor/autoload.php";
 
@@ -40,18 +39,21 @@ class AuthMiddleware implements Middleware {
 Route::get('/middlewares', fn (Request $request) => json(["message" => "ok"]))
     ->setMiddlewares([AuthMiddleware::class]);
 
-Route::get('/html',fn (Request $request) => view('home', ['user' => 'Juan']));
+Route::get('/html', fn (Request $request) => view('home', ['user' => 'Manolo']));
 
 Route::post('/validate', fn (Request $request) => json($request->validate([
     'test' => 'required',
     'num' => 'number',
-    'email' => ['required', 'email']
+    'email' => ['required_with:num', 'email']
 ], [
     'email' => [
         'email' => 'DAME EL CAMPO'
     ]
 ])));
 
+Route::get('/session', function (Request $request) {
+    session()->remove('test');
+    return json(["id" => session()->id(), 'test' => session()->get('test', 'por defecto')]);
+});
+
 $app->run();
-
-
