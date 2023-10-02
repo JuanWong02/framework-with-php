@@ -3,6 +3,7 @@
 namespace Jc\Http;
 
 use Jc\Routing\Route;
+use Jc\Validation\Validator;
 
 /**
  * HTTP request.
@@ -167,5 +168,11 @@ class Request {
      */
     public function routeParameters(): array {
         return $this->route->parseParameters($this->uri);
+    }
+
+    public function validate(array $rules, array $messages = []): array {
+        $validator = new Validator($this->data);
+
+        return $validator->validate($rules, $messages);
     }
 }
