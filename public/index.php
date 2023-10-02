@@ -43,7 +43,7 @@ class AuthMiddleware implements Middleware {
 Route::get('/middlewares', fn (Request $request) => json(["message" => "ok"]))
     ->setMiddlewares([AuthMiddleware::class]);
 
-Route::get('/html', fn (Request $request) => view('home', ['user' => 'Juan']));
+Route::get('/html', fn (Request $request) => view('home', ['user' => 'Manolo']));
 
 Route::post('/validate', fn (Request $request) => json($request->validate([
     'test' => 'required',
@@ -56,15 +56,14 @@ Route::post('/validate', fn (Request $request) => json($request->validate([
 ])));
 
 Route::get('/session', function (Request $request) {
-    // session()->flash('alert', 'success');
+    // session()->flash('test', 'test');
     return json($_SESSION);
 });
 
-Route::get('/form', fn(Request $request) => view('form'));
+Route::get('/form', fn (Request $request) => view('form'));
 
 Route::post('/form', function (Request $request) {
     return json($request->validate(['email' => 'email', 'name' => 'required']));
-
 });
 
 Route::post('/user', function (Request $request) {
@@ -90,9 +89,22 @@ Route::post('/user/model', function (Request $request) {
 });
 
 Route::get('/user/query', function (Request $request) {
+    return json(array_map(fn ($m) => $m->toArray(), User::where('name', 'Manolo')));
+});
 
-    return json(array_map(fn ($m) => $m->toArray(), User::where('name', 'juan')));
+Route::post('/users/{id}/update', function (Request $request) {
+    $user = User::find($request->routeParameters('id'));
 
+    $user->name = $request->data('name');
+    $user->email = $request->data('email');
+    
+    return json($user->update()->toArray());
+});
+
+Route::delete('/users/{id}/delete', function (Request $request) {
+    $user = User::find($request->routeParameters('id'));
+
+    return json($user->delete()->toArray());
 });
 
 $app->run();

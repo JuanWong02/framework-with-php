@@ -39,7 +39,7 @@ class Route {
     /**
      * HTTP middlewares.
      *
-     * @var \Jc\Http\Middleware[]
+     * @var \Lune\Http\Middleware[]
      */
     protected array $middlewares = [];
 
@@ -77,9 +77,9 @@ class Route {
     }
 
     /**
-     * Get all HTTP middlewares fot this route
+     * Get all HTTP middlewares for this route.
      *
-     * @return \Jc\Http\Middleware[]
+     * @return \Lune\Http\Middleware[]
      */
     public function middlewares(): array {
         return $this->middlewares;
@@ -126,10 +126,18 @@ class Route {
     }
 
     public static function get(string $uri, Closure $action): Route {
-      return app()->router->get($uri, $action);
+        return app()->router->get($uri, $action);
     }
 
     public static function post(string $uri, Closure $action): Route {
         return app()->router->post($uri, $action);
-      }
+    }
+
+    public static function put(string $uri, Closure $action): Route {
+        return app()->router->put($uri, $action);
+    }
+
+    public static function delete(string $uri, Closure $action): Route {
+        return app()->router->delete($uri, $action);
+    }
 }
