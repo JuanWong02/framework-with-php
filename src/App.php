@@ -2,6 +2,7 @@
 
 namespace Jc;
 
+use Jc\Http\HttpMethod;
 use Jc\Http\HttpNotFoundException;
 use Jc\Http\Request;
 use Jc\Http\Response;
@@ -39,14 +40,24 @@ class App {
         return $app;
     }
 
+    public function prepareNextRequest() {
+        if ($this->request->method() == HttpMethod::GET) {
+            $this->session->set('_previous', $this->request->uri());
+        }
+    }
+
+    public function terminate(Response $response) {
+        $this->prepareNextRequest();
+        $this->server->sendResponse($response);
+    }
+
     public function run() {
         try {
-            $response = $this->router->resolve($this->request);
-            $this->server->sendResponse($response);
+           $this->terminate($this->router->resolve($this->request));
         } catch (HttpNotFoundException $e) {
             $this->abort(Response::text("Not found")->setStatus(404));
         } catch (ValidationException $e) {
-            $this->abort(json($e->errors())->setStatus(422));
+            $this->abort(back()->withErrors($e->errors(), 422));
         } catch (Throwable $e) {
             $response = json([
                 "error" => $e::class,
@@ -59,6 +70,6 @@ class App {
     }
 
     public function abort(Response $response) {
-        $this->server->sendResponse($response);
+        $this->terminate($response);
     }
 }
