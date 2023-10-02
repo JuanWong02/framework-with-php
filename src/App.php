@@ -42,6 +42,7 @@ class App {
         $app->session = new Session(new PhpNativeSessionStorage());
         $app->database = new PdoDriver();
         $app->database->connect('mysql', 'localhost', 3306, 'curso_framework', 'root', '');
+        Model::setDatabaseDriver($app->database);
         Rule::loadDefaultRules();
 
         return $app;
