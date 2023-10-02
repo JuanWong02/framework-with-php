@@ -2,6 +2,9 @@
 
 namespace Jc;
 
+use Jc\Database\Drivers\DatabaseDriver;
+use Jc\Database\Drivers\PdoDriver;
+use Jc\Database\Model;
 use Jc\Http\HttpMethod;
 use Jc\Http\HttpNotFoundException;
 use Jc\Http\Request;
@@ -28,6 +31,8 @@ class App {
 
     public Session $session;
 
+    public DatabaseDriver $database;
+
     public static function bootstrap() {
         $app = singleton(self::class);
         $app->router = new Router();
@@ -35,6 +40,8 @@ class App {
         $app->request = $app->server->getRequest();
         $app->view = new JcEngine(__DIR__ . "/../views");
         $app->session = new Session(new PhpNativeSessionStorage());
+        $app->database = new PdoDriver();
+        $app->database->connect('mysql', 'localhost', 3306, 'curso_framework', 'root', '');
         Rule::loadDefaultRules();
 
         return $app;
@@ -49,11 +56,13 @@ class App {
     public function terminate(Response $response) {
         $this->prepareNextRequest();
         $this->server->sendResponse($response);
+        $this->database->close();
+        exit();
     }
 
     public function run() {
         try {
-           $this->terminate($this->router->resolve($this->request));
+            $this->terminate($this->router->resolve($this->request));
         } catch (HttpNotFoundException $e) {
             $this->abort(Response::text("Not found")->setStatus(404));
         } catch (ValidationException $e) {

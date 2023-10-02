@@ -1,10 +1,14 @@
 <?php
 
 use Jc\App;
+use Jc\Database\DB;
+use Jc\Database\Model;
 use Jc\Http\Middleware;
 use Jc\Http\Request;
 use Jc\Http\Response;
 use Jc\Routing\Route;
+use Jc\Validation\Rule;
+use Jc\Validation\Rules\Required;
 
 
 require_once "../vendor/autoload.php";
@@ -39,7 +43,7 @@ class AuthMiddleware implements Middleware {
 Route::get('/middlewares', fn (Request $request) => json(["message" => "ok"]))
     ->setMiddlewares([AuthMiddleware::class]);
 
-Route::get('/html', fn (Request $request) => view('home', ['user' => 'Manolo']));
+Route::get('/html', fn (Request $request) => view('home', ['user' => 'Juan']));
 
 Route::post('/validate', fn (Request $request) => json($request->validate([
     'test' => 'required',
@@ -60,6 +64,29 @@ Route::get('/form', fn(Request $request) => view('form'));
 
 Route::post('/form', function (Request $request) {
     return json($request->validate(['email' => 'email', 'name' => 'required']));
+
+});
+
+Route::post('/user', function (Request $request) {
+    DB::statement("INSERT INTO users (name, email) VALUES (?, ?)", [$request->data('name'), $request->data('email')]);
+    return json(["message" => "ok"]);
+});
+
+Route::get('/users', function (Request $request) {
+    return json(DB::statement("SELECT * FROM users"));
+});
+
+class User extends Model {
+
+}
+
+Route::post('/user/model', function (Request $request) {
+    $user = new User();
+    $user->name = $request->data('name');
+    $user->email = $request->data('email');
+    $user->save();
+
+    return json(["message" => "ok"]);
 });
 
 $app->run();
