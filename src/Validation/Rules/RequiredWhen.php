@@ -2,6 +2,7 @@
 
 namespace Jc\Validation\Rules;
 
+use Jc\Validation\Exceptions\RuleParseException;
 
 class RequiredWhen implements ValidationRule {
     /**
@@ -36,6 +37,7 @@ class RequiredWhen implements ValidationRule {
             "<" => $data[$this->otherField] < floatval($this->compareWith),
             ">=" => $data[$this->otherField] >= floatval($this->compareWith),
             "<=" => $data[$this->otherField] <= floatval($this->compareWith),
+            default => throw new RuleParseException("Unknown required_when opertor: $this->operator"),
         };
 
         return !$isRequired || isset($data[$field]) && $data[$field] != "";

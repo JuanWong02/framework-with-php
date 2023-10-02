@@ -5,7 +5,7 @@ namespace Jc\Validation\Rules;
 class Required implements ValidationRule{
     public function message(): string 
     {
-        return "This fiels is required";
+        return "This field is required";
     }
 
     public function isValid(string $field, array $data): bool
