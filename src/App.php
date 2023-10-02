@@ -2,7 +2,6 @@
 
 namespace Jc;
 
-use Jc\Container\Container;
 use Jc\Http\HttpNotFoundException;
 use Jc\Http\Request;
 use Jc\Http\Response;
@@ -12,8 +11,7 @@ use Jc\Server\Server;
 use Jc\View\JcEngine;
 use Jc\View\View;
 
-class App
-{
+class App {
     public Router $router;
 
     public Request $request;
@@ -22,9 +20,8 @@ class App
 
     public View $view;
 
-    public static function bootstrap()
-    {
-        $app = Container::singleton(self::class);
+    public static function bootstrap() {
+        $app = singleton(self::class);
         $app->router = new Router();
         $app->server = new PhpNativeServer();
         $app->request = $app->server->getRequest();
@@ -33,8 +30,7 @@ class App
         return $app;
     }
 
-    public function run()
-    {
+    public function run() {
         try {
             $response = $this->router->resolve($this->request);
             $this->server->sendResponse($response);
