@@ -2,6 +2,8 @@
 
 namespace Jc;
 
+use Dotenv\Dotenv;
+use Jc\Config\Config;
 use Jc\Database\Drivers\DatabaseDriver;
 use Jc\Database\Drivers\PdoDriver;
 use Jc\Database\Model;
@@ -21,6 +23,8 @@ use Jc\View\View;
 use Throwable;
 
 class App {
+    public static string $root;
+
     public Router $router;
 
     public Request $request;
@@ -33,7 +37,10 @@ class App {
 
     public DatabaseDriver $database;
 
-    public static function bootstrap() {
+    public static function bootstrap(string $root) {
+        self::$root = $root;
+        Dotenv::createImmutable($root)->load();
+        Config::load("$root/config");
         $app = singleton(self::class);
         $app->router = new Router();
         $app->server = new PhpNativeServer();
