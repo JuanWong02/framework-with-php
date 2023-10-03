@@ -87,6 +87,8 @@ abstract class Model {
             array_values($this->attributes)
         );
 
+        $this->{$this->primaryKey} = self::$driver->lastInsertId();
+
         return $this;
     }
 
