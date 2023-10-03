@@ -3,12 +3,12 @@
 use Jc\Database\DB;
 use Jc\Database\Migrations\Migration;
 
-return new class () implements Migration {
+return new class() implements Migration {
     public function up() {
-        DB::statement('$UP');
+        DB::statement('ALTER TABLE products');
     }
 
     public function down() {
-        DB::statement('$DOWN');
+        DB::statement('ALTER TABLE products');
     }
 };
