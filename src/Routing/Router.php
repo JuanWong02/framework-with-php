@@ -3,6 +3,7 @@
 namespace Jc\Routing;
 
 use Closure;
+use Jc\Container\DependencyInjection;
 use Jc\Http\HttpMethod;
 use Jc\Http\HttpNotFoundException;
 use Jc\Http\Request;
@@ -59,12 +60,13 @@ class Router
             $action[0] = $controller;
         }
 
+        $params = DependencyInjection::resolveParametrs($action, $request->routeParameters());
         
 
         return $this->runMiddlewares(
             $request,
             $route->middlewares(),
-            fn () => call_user_func($action, $request));
+            fn () => call_user_func($action, ...$params));
 
     }
 

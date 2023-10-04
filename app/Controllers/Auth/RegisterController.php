@@ -9,12 +9,12 @@ use Jc\Http\Request;
 
 class RegisterController extends Controller
 {
-    public function create(Request $request)
+    public function create()
     {
         return view('auth/register');
     }
 
-    public function store(Request $request)
+    public function store(Request $request, Hasher $hasher)
     {
         $data = $request->validate([
             "email" => ["required", "email"],
@@ -29,7 +29,7 @@ class RegisterController extends Controller
             ]);
         }
 
-        $data["password"] = app(Hasher::class)->hash($data["password"]);
+        $data["password"] = $hasher->hash($data["password"]);
 
         $user = User::create($data);
 
