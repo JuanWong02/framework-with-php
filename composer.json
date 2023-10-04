@@ -5,8 +5,7 @@
     "license": "MIT",
     "autoload": {
         "psr-4": {
-            "Jc\\": "src/",
-            "App\\": "app/"
+            "Jc\\": "src/"
         },
         "files": [
             "src/Helpers/app.php",
