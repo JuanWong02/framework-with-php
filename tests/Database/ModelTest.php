@@ -19,6 +19,7 @@ class MockModelFillable extends MockModel {
 
 class ModelTest extends TestCase {
     use RefreshDatabase;
+
     protected ?DatabaseDriver $driver = null;
 
     private function createTestTable($name, $columns, $withTimestamps = true) {
