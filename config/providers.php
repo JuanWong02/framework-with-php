@@ -8,6 +8,7 @@ return [
         \Jc\Providers\ViewServiceProvider::class,
         \Jc\Providers\AuthenticatorServiceProvider::class,
         \Jc\Providers\HasherServiceProvider::class,
+        \Jc\Providers\FileStorageDriverServiceProvider::class,
     ],
     'runtime' => [
         App\Providers\RuleServiceProvider::class,

@@ -4,11 +4,13 @@ namespace Jc\Http;
 
 use Jc\Routing\Route;
 use Jc\Validation\Validator;
+use PHPUnit\TextUI\Configuration\File;
 
 /**
  * HTTP request.
  */
-class Request {
+class Request
+{
     /**
      * URI requested by the client.
      *
@@ -46,12 +48,21 @@ class Request {
 
     protected array $headers = [];
 
+
+    /**
+     * Uploaded files.
+     *
+     * @var array<string, \Lune\Storage\File>
+     */
+    protected array $files = [];
+
     /**
      * Get the request URI.
      *
      * @return string
      */
-    public function uri(): string {
+    public function uri(): string
+    {
         return $this->uri;
     }
 
@@ -61,7 +72,8 @@ class Request {
      * @param string $uri
      * @return self
      */
-    public function setUri(string $uri): self {
+    public function setUri(string $uri): self
+    {
         $this->uri = $uri;
         return $this;
     }
@@ -71,7 +83,8 @@ class Request {
      *
      * @return Route
      */
-    public function route(): Route {
+    public function route(): Route
+    {
         return $this->route;
     }
 
@@ -81,7 +94,8 @@ class Request {
      * @param Route $route
      * @return self
      */
-    public function setRoute(Route $route): self {
+    public function setRoute(Route $route): self
+    {
         $this->route = $route;
         return $this;
     }
@@ -91,7 +105,8 @@ class Request {
      *
      * @return HttpMethod
      */
-    public function method(): HttpMethod {
+    public function method(): HttpMethod
+    {
         return $this->method;
     }
 
@@ -101,12 +116,14 @@ class Request {
      * @param HttpMethod $method
      * @return self
      */
-    public function setMethod(HttpMethod $method): self {
+    public function setMethod(HttpMethod $method): self
+    {
         $this->method = $method;
         return $this;
     }
 
-    public function headers(string $key = null): array|string|null {
+    public function headers(string $key = null): array|string|null
+    {
         if (is_null($key)) {
             return $this->headers;
         }
@@ -114,11 +131,35 @@ class Request {
         return $this->headers[strtolower($key)] ?? null;
     }
 
-    public function setHeaders(array $headers): self {
+    public function setHeaders(array $headers): self
+    {
         foreach ($headers as $header => $value) {
             $this->headers[strtolower($header)] = $value;
         }
 
+        return $this;
+    }
+
+    /**
+     * Get file from request.
+     *
+     * @param string $name
+     * @return File|null
+     */
+    public function file(string $name): ?File
+    {
+        return $this->files[$name] ?? null;
+    }
+
+    /**
+     * Set uploaded files.
+     *
+     * @param array<string, \Lune\Storage\File> $files
+     * @return self
+     */
+    public function setFiles(array $files): self
+    {
+        $this->files = $files;
         return $this;
     }
 
@@ -129,7 +170,8 @@ class Request {
      * @return array|string|null Null if the key doesn't exist, the value of
      * the key if it is present or all the data if no key was provided.
      */
-    public function data(?string $key = null): array|string|null {
+    public function data(?string $key = null): array|string|null
+    {
         if (is_null($key)) {
             return $this->data;
         }
@@ -143,7 +185,8 @@ class Request {
      * @param array $data
      * @return self
      */
-    public function setPostData(array $data): self {
+    public function setPostData(array $data): self
+    {
         $this->data = $data;
         return $this;
     }
@@ -155,7 +198,8 @@ class Request {
      * @return array|string|null Null if the key doesn't exist, the value of
      * the key if it is present or all the query params if no key was provided.
      */
-    public function query(?string $key = null): array|string|null {
+    public function query(?string $key = null): array|string|null
+    {
         if (is_null($key)) {
             return $this->query;
         }
@@ -169,7 +213,8 @@ class Request {
      * @param array $query
      * @return self
      */
-    public function setQueryParameters(array $query): self {
+    public function setQueryParameters(array $query): self
+    {
         $this->query = $query;
         return $this;
     }
@@ -181,7 +226,8 @@ class Request {
      * @return array|string|null Null if the key doesn't exist, the value of
      * the key if it is present or all the route params if no key was provided.
      */
-    public function routeParameters(?string $key = null): array|string|null {
+    public function routeParameters(?string $key = null): array|string|null
+    {
         $parameters = $this->route->parseParameters($this->uri);
 
         if (is_null($key)) {
@@ -191,7 +237,8 @@ class Request {
         return $parameters[$key] ?? null;
     }
 
-    public function validate(array $rules, array $messages = []): array {
+    public function validate(array $rules, array $messages = []): array
+    {
         $validator = new Validator($this->data);
 
         return $validator->validate($rules, $messages);
